@@ -1,0 +1,17 @@
+[package]
+name = "meet-app-components"
+edition.workspace = true
+version.workspace = true
+
+[dependencies]
+mimi-protocol-mls.workspace = true
+thiserror.workspace = true
+strum.workspace = true
+fwd-comp.workspace = true
+
+[dev-dependencies]
+meet-identifiers = { workspace = true, features = ["test-util"] }
+rand = "0.8"
+
+[lints]
+workspace = true

@@ -1,0 +1,69 @@
+[package]
+name = "mls-utils"
+edition.workspace = true
+version.workspace = true
+
+[features]
+default = ["validations"]
+mls-rs = [
+    "dep:mls-rs",
+    "dep:mls-rs-crypto-rustcrypto",
+    "dep:mls-rs-core",
+    "mls-rs/private_message",
+]
+serde = ["mimi-protocol-mls/serde"]
+validations = ["signatures"]
+signatures = [
+    "dep:signature",
+    "dep:p256",
+    "dep:p384",
+    "dep:p521",
+    "dep:ed25519-dalek",
+]
+pke = ["dep:hpke"]
+keygen = ["ed25519-dalek?/rand_core"]
+
+[dependencies]
+num-traits = "0.2"
+sha2 = "0.10"
+hmac = "0.12"
+bs58 = "0.5"
+thiserror.workspace = true
+base64.workspace = true
+meet-identifiers.workspace = true
+# Signatures feature flag
+signature = { workspace = true, optional = true }
+ed25519-dalek = { version = "2.2", optional = true }
+p256 = { version = "0.13", default-features = false, features = [
+    "std",
+    "ecdsa",
+], optional = true }
+p384 = { version = "0.13", default-features = false, features = [
+    "std",
+    "ecdsa",
+], optional = true }
+p521 = { version = "0.13", default-features = false, features = [
+    "std",
+    "ecdsa",
+    "getrandom",
+], optional = true }
+hpke = { version = "0.12", default-features = false, features = [
+    "std",
+    "alloc",
+    "x25519",
+    "p256",
+    "p384",
+    "p521",
+], optional = true }
+rand = "0.8"
+zeroize = "1.8"
+mimi-protocol-mls.workspace = true
+mls-rs = { workspace = true, optional = true, features = [
+    "x509",
+    "external_client",
+    "application_data",
+] }
+mls-rs-crypto-rustcrypto = { workspace = true, optional = true, features = [
+    "x509",
+] }
+mls-rs-core = { workspace = true, optional = true }

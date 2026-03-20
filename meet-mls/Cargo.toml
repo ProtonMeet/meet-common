@@ -1,0 +1,27 @@
+[package]
+name = "meet-mls"
+description = "Transverse MLS validations"
+edition.workspace = true
+version.workspace = true
+
+[features]
+server = []
+
+[dependencies]
+mimi-protocol-mls = { workspace = true, features = [
+    "mls-sd-cwt-credential",
+    "mls-extensions",
+    "mls-semiprivate-message",
+    "fanout-draft-03-compat",
+] }
+mimi-room-policy.workspace = true
+mimi-content = { workspace = true, features = ["franking-tag", "gfm-mimi"] }
+mls-utils.workspace = true
+meet-policy.workspace = true
+proton-claims.workspace = true
+meet-identifiers.workspace = true
+thiserror.workspace = true
+sha2.workspace = true
+
+[lints]
+workspace = true

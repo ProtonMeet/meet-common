@@ -1,0 +1,35 @@
+[package]
+name = "meet-identifiers"
+description = "Common identifiers"
+edition.workspace = true
+version.workspace = true
+
+[dependencies]
+ulid = { workspace = true, features = ["serde"] }
+facet = { workspace = true, features = ["bytes"] }
+serde = { workspace = true, features = ["derive"] }
+serde_bytes.workspace = true
+rand = "0.8"
+thiserror.workspace = true
+fluent-uri.workspace = true
+base64.workspace = true
+sha2 = { workspace = true, features = ["oid"] }
+hex = { workspace = true, features = ["alloc"] }
+subtle.workspace = true
+zeroize = { workspace = true, features = ["zeroize_derive"] }
+email_address.workspace = true
+
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+js-sys = "0.3"
+getrandom = { version = "0.2", features = ["js"] }
+
+[dev-dependencies]
+meet-identifiers = { workspace = true, features = ["test-util"] }
+serde_json.workspace = true
+ciborium.workspace = true
+
+[features]
+test-util = []
+
+[lints]
+workspace = true

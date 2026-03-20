@@ -1,0 +1,25 @@
+[package]
+name = "meet-policy"
+description = "MIMI room policies"
+edition.workspace = true
+version.workspace = true
+
+[features]
+server = []
+
+[dependencies]
+mimi-room-policy.workspace = true
+mimi-protocol-mls = { workspace = true, features = ["mls-sd-cwt-credential"] }
+proton-claims.workspace = true
+meet-identifiers.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+strum = { workspace = true, features = ["strum_macros"] }
+fwd-comp.workspace = true
+
+[dev-dependencies]
+itertools.workspace = true
+meet-identifiers = { workspace = true, features = ["test-util"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,34 @@
+[package]
+name = "proton-claims"
+edition.workspace = true
+version.workspace = true
+
+[features]
+ed25519 = ["esdicawt/ed25519"]
+p256 = ["esdicawt/p256"]
+p384 = ["esdicawt/p384"]
+pem = ["esdicawt/pem"]
+status-list = ["dep:status-list", "esdicawt/status"]
+
+[dependencies]
+meet-identifiers = { workspace = true }
+esdicawt.workspace = true
+serde = { workspace = true, features = ["derive"] }
+serde_repr.workspace = true
+spice-oidc-cwt.workspace = true
+thiserror.workspace = true
+derive_builder.workspace = true
+digest.workspace = true
+enum-variants-strings.workspace = true
+
+status-list = { workspace = true, optional = true }
+
+[dev-dependencies]
+esdicawt = { workspace = true, features = ["test-utils", "ed25519", "p256", "p384"] }
+rand.workspace = true
+ed25519-dalek = { workspace = true, features = ["rand_core"] }
+sha2.workspace = true
+meet-identifiers = { workspace = true, features = ["test-util"] }
+
+[lints]
+workspace = true

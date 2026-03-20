@@ -1,0 +1,16 @@
+[package]
+name = "meet-app-components-macros"
+description = "Macros for meet-app-components"
+edition.workspace = true
+version.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { workspace = true, features = ["full"] }
+proc-macro2 = { workspace = true }
+quote = { workspace = true }
+
+[lints]
+workspace = true
