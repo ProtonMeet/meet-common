@@ -15,7 +15,7 @@ mimi-protocol-mls = { workspace = true, features = [
     "fanout-draft-03-compat",
 ] }
 mimi-room-policy.workspace = true
-mimi-content = { workspace = true, features = ["franking-tag", "gfm-mimi"] }
+mimi-content = { workspace = true, features = ["franking-tag"] }
 mls-utils.workspace = true
 meet-policy.workspace = true
 proton-claims.workspace = true
