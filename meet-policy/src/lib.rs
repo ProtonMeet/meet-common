@@ -223,7 +223,7 @@ impl RoomPolicies {
                         StdCapability::CanChangePreauthorizedUserList,
                     ])
                     .with_authorized_role_change(UserRole::Member, vec![UserRole::NoRole])
-                    .with_authorized_role_change(UserRole::NoRole, vec![UserRole::Member]);
+                    .with_authorized_role_change(UserRole::NoRole, vec![UserRole::Member, UserRole::Agent]);
                 match kind {
                     RoomKind::BasicHostedRoom { .. } | RoomKind::BasicRoomWithWaiting { .. } | RoomKind::Dm { .. } => {
                         if member_can_add_participant(kind) {
@@ -317,7 +317,7 @@ impl RoomPolicies {
                         admin
                             .with_authorized_role_change(
                                 UserRole::NoRole,
-                                vec![UserRole::Banned, UserRole::Member, UserRole::RoomAdmin],
+                                vec![UserRole::Banned, UserRole::Member, UserRole::RoomAdmin, UserRole::Agent],
                             )
                             .with_authorized_role_change(
                                 UserRole::Banned,
@@ -331,6 +331,7 @@ impl RoomPolicies {
                                 UserRole::RoomAdmin,
                                 vec![UserRole::NoRole, UserRole::Banned, UserRole::Member],
                             )
+                            .with_authorized_role_change(UserRole::Agent, vec![UserRole::NoRole, UserRole::Banned])
                             .with_minimum_participants_constraint(1)
                     }
                     RoomKind::SelfRoom => r
@@ -348,6 +349,18 @@ impl RoomPolicies {
                         .with_authorized_role_change(UserRole::RoomAdmin, vec![UserRole::NoRole]),
                 })
             }
+            UserRole::Agent => Some(
+                r.with_capabilities([
+                    StdCapability::CanJoinIfPreauthorized,
+                    StdCapability::CanRemoveSelf,
+                    StdCapability::CanJoinCall,
+                    StdCapability::CanReceiveAudio,
+                    StdCapability::CanSendMessage,
+                    StdCapability::CanReceiveMessage,
+                    StdCapability::CanSendMlsPSKProposal,
+                ])
+                .with_authorized_role_change(UserRole::Agent, vec![UserRole::NoRole]),
+            ),
             UserRole::PolicyEnforcer => {
                 r = r
                     .with_capabilities([

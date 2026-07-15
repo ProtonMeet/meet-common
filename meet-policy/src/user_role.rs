@@ -24,6 +24,8 @@ pub enum UserRole {
     Member = 0x03,
     /// Also known as a room admin, he is almighty on the room
     RoomAdmin = 0x04,
+    /// LiveKit agent role
+    Agent = 0x05,
     /// In charge of...
     PolicyEnforcer = 0xF0,
     /// unknown role, when a room has a role_index that we do not know about
@@ -37,6 +39,7 @@ impl UserRole {
             1 => Self::Banned,
             3 => Self::Member,
             4 => Self::RoomAdmin,
+            5 => Self::Agent,
             0xF0 => Self::PolicyEnforcer,
             _ => Self::Unknown,
         }
@@ -48,6 +51,7 @@ impl UserRole {
             Self::Banned => Role::new(self as u32, "banned", "banned"),
             Self::Member => Role::new(self as u32, "member", "member"),
             Self::RoomAdmin => Role::new(self as u32, "room admin", "room admin"),
+            Self::Agent => Role::new(self as u32, "agent", "agent"),
             Self::PolicyEnforcer => Role::new(self as u32, "policy enforcer", "policy enforcer"),
             Self::Unknown => Role::new(self as u32, "unknown", "unknown"),
         }
