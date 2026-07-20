@@ -10,6 +10,7 @@ use std::{collections::HashMap, sync::LazyLock};
 
 mod about;
 mod blanket;
+mod client_type;
 mod error;
 mod provider;
 mod role;
@@ -17,6 +18,7 @@ mod user_asserted;
 
 pub use {
     about::About,
+    client_type::ClientType,
     error::ProtonClaimsError,
     provider::MimiProvider,
     role::Role,
@@ -40,10 +42,11 @@ pub mod reexports {
 #[enum_variants_strings_transform(transform = "snake_case")]
 #[repr(i64)]
 pub enum CwtProtonMeetLabel {
-    MeetingId = -66550,
-    TokenUuid = -66551,
-    PolicyEnforcer = -66552,
+    MeetingId = -67550,
+    TokenUuid = -67551,
+    PolicyEnforcer = -67552,
     Host = -67553,
+    ClientType = -67554,
 }
 esdicawt::cwt_label!(CwtProtonMeetLabel);
 
@@ -61,6 +64,8 @@ pub struct ProtonMeetClaims {
     pub is_from_server: bool,
     #[builder(default = "false")]
     pub is_host: bool,
+    #[builder(default = "ClientType::None")]
+    pub client_type: ClientType,
 }
 
 impl serde::Serialize for ProtonMeetClaims {
@@ -83,6 +88,7 @@ impl serde::Serialize for ProtonMeetClaims {
         map.serialize_entry(&CwtProtonMeetLabel::TokenUuid, &Value::Bytes(self.uuid.to_vec()))?;
         map.serialize_entry(&CwtProtonMeetLabel::PolicyEnforcer, &self.is_from_server)?;
         map.serialize_entry(&CwtProtonMeetLabel::Host, &self.is_host)?;
+        map.serialize_entry(&CwtProtonMeetLabel::ClientType, &self.client_type)?;
         map.end()
     }
 }
@@ -108,10 +114,11 @@ impl<'de> serde::Deserialize<'de> for ProtonMeetClaims {
                     if let Value::Integer(i) = &k {
                         // TODO: Remove the back compatibility with the old labels later
                         let i_val_opt = i64::try_from(*i).ok();
-                        let is_meeting_id = *i == CwtProtonMeetLabel::MeetingId || i_val_opt == Some(-67550);
-                        let is_token_uuid = *i == CwtProtonMeetLabel::TokenUuid || i_val_opt == Some(-67551);
-                        let is_policy_enforcer = *i == CwtProtonMeetLabel::PolicyEnforcer || i_val_opt == Some(-67552);
+                        let is_meeting_id = *i == CwtProtonMeetLabel::MeetingId || i_val_opt == Some(-66550);
+                        let is_token_uuid = *i == CwtProtonMeetLabel::TokenUuid || i_val_opt == Some(-66551);
+                        let is_policy_enforcer = *i == CwtProtonMeetLabel::PolicyEnforcer || i_val_opt == Some(-66552);
                         let is_host_label = *i == CwtProtonMeetLabel::Host;
+                        let is_client_type = *i == CwtProtonMeetLabel::ClientType;
 
                         match (&k, &v) {
                             (Value::Integer(i), Value::Integer(j)) if *i == CwtProtonLabel::Role => {
@@ -142,6 +149,10 @@ impl<'de> serde::Deserialize<'de> for ProtonMeetClaims {
                             }
                             (_, Value::Bool(is_host)) if is_host_label => {
                                 builder.is_host(*is_host);
+                                handled = true;
+                            }
+                            (_, Value::Integer(j)) if is_client_type => {
+                                builder.client_type(ClientType::from(u16::try_from(*j).map_err(A::Error::custom)?));
                                 handled = true;
                             }
                             _ => {}
@@ -206,6 +217,27 @@ mod tests {
         assert_eq!(claims.mimi_provider, MimiProvider::ProtonAg);
         assert!(claims.is_from_server);
         assert!(!claims.is_host); // Default to false if not set
+        assert_eq!(claims.client_type, ClientType::None); // Default when claim is absent
+    }
+
+    #[test]
+    fn client_type_round_trip() {
+        let claims = ProtonMeetClaimsBuilder::create_empty()
+            .meeting_id("meeting-123")
+            .uuid([1u8; 16])
+            .oidc_claims(SpiceOidcClaims::default())
+            .role(Role::User)
+            .mimi_provider(MimiProvider::ProtonAg)
+            .client_type(ClientType::Guest)
+            .build()
+            .unwrap();
+
+        let value = Value::serialized(&claims).unwrap();
+        let mut bytes = Vec::new();
+        ciborium::ser::into_writer(&value, &mut bytes).unwrap();
+
+        let decoded: ProtonMeetClaims = ciborium::de::from_reader(bytes.as_slice()).unwrap();
+        assert_eq!(decoded.client_type, ClientType::Guest);
     }
 }
 
